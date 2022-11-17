@@ -1,0 +1,38 @@
+Changes in module 'nf-core/umitools/extract'
+--- modules/nf-core/umitools/extract/main.nf
++++ modules/nf-core/umitools/extract/main.nf
+@@ -9,6 +9,8 @@
+ 
+     input:
+     tuple val(meta), path(reads)
++    val umi_bc_pattern
++    path whitelist
+ 
+     output:
+     tuple val(meta), path("*.fastq.gz"), emit: reads
+@@ -25,8 +27,10 @@
+         """
+         umi_tools \\
+             extract \\
++            --bc-pattern=$umi_bc_pattern \\
+             -I $reads \\
+             -S ${prefix}.umi_extract.fastq.gz \\
++            --whitelist=$whitelist \\
+             $args \\
+             > ${prefix}.umi_extract.log
+ 
+@@ -39,10 +43,12 @@
+         """
+         umi_tools \\
+             extract \\
++            --bc-pattern=$umi_bc_pattern \\
+             -I ${reads[0]} \\
+             --read2-in=${reads[1]} \\
+             -S ${prefix}.umi_extract_1.fastq.gz \\
+             --read2-out=${prefix}.umi_extract_2.fastq.gz \\
++            --whitelist=$whitelist \\
+             $args \\
+             > ${prefix}.umi_extract.log
+ 
+
+************************************************************

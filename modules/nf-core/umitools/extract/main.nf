@@ -9,7 +9,6 @@ process UMITOOLS_EXTRACT {
 
     input:
     tuple val(meta), path(reads)
-    val umi_bc_pattern
     path whitelist
 
     output:
@@ -23,39 +22,20 @@ process UMITOOLS_EXTRACT {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    if (meta.single_end) {
-        """
-        umi_tools \\
-            extract \\
-            --bc-pattern=$umi_bc_pattern \\
-            -I $reads \\
-            -S ${prefix}.umi_extract.fastq.gz \\
-            --whitelist=$whitelist \\
-            $args \\
-            > ${prefix}.umi_extract.log
-
-        cat <<-END_VERSIONS > versions.yml
-        "${task.process}":
-            umitools: \$(umi_tools --version 2>&1 | sed 's/^.*UMI-tools version://; s/ *\$//')
-        END_VERSIONS
-        """
-    }  else {
-        """
-        umi_tools \\
-            extract \\
-            --bc-pattern=$umi_bc_pattern \\
-            -I ${reads[0]} \\
-            --read2-in=${reads[1]} \\
-            -S ${prefix}.umi_extract_1.fastq.gz \\
-            --read2-out=${prefix}.umi_extract_2.fastq.gz \\
-            --whitelist=$whitelist \\
-            $args \\
-            > ${prefix}.umi_extract.log
-
-        cat <<-END_VERSIONS > versions.yml
-        "${task.process}":
-            umitools: \$(umi_tools --version 2>&1 | sed 's/^.*UMI-tools version://; s/ *\$//')
-        END_VERSIONS
-        """
-    }
+    """
+    umi_tools \\
+        extract \\
+        --bc-pattern=CCCCCCCCCCCCCCCCNNNNNNNNNNNN \\
+        -I ${reads[0]} \\
+        --read2-in=${reads[1]} \\
+        -S ${prefix}.umi_extract_1.fastq.gz \\
+        --read2-out=${prefix}.umi_extract_2.fastq.gz \\
+        --whitelist=$whitelist \\
+        $args \\
+        > ${prefix}.umi_extract.log
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        umitools: \$(umi_tools --version 2>&1 | sed 's/^.*UMI-tools version://; s/ *\$//')
+    END_VERSIONS
+    """
 }

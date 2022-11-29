@@ -5,6 +5,22 @@
     "description": "Extracting pooled scRNAseq fastq files with individual cell barcodes.",
     "type": "object",
     "definitions": {
+        "mandatory_options": {
+            "title": "Mandatory options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "whitelist": {
+                    "type": "string",
+                    "description": "Barcode list for extraction.",
+                    "fa_icon": "fas fa-barcode"
+                }
+            },
+            "required": [
+                "whitelist"
+            ]
+        },
         "input_output_options": {
             "title": "Input/output options",
             "type": "object",
@@ -241,6 +257,9 @@
     },
     "allOf": [
         {
+            "$ref": "#/definitions/mandatory_options"
+        },
+        {
             "$ref": "#/definitions/input_output_options"
         },
         {
@@ -252,21 +271,5 @@
         {
             "$ref": "#/definitions/generic_options"
         }
-    ],
-    "properties": {
-        "whitelist": {
-            "type": "string",
-            "description": "Barcode list for extraction.",
-            "fa_icon": "fas fa-book"
-        },
-        "umi_bc_pattern": {
-            "type": "string",
-            "description": "Cell barcode and UMI pattern. (e.g. for 10xV3, `--umi_bc_pattern=CCCCCCCCCCCCCCCCNNNNNNNNNNNN`)",
-            "fa_icon": "fas fa-fingerprint"
-        }
-    },
-    "required": [
-        "umi_bc_pattern",
-        "whitelist"
     ]
 }

@@ -1,38 +1,65 @@
 Changes in module 'nf-core/umitools/extract'
 --- modules/nf-core/umitools/extract/main.nf
 +++ modules/nf-core/umitools/extract/main.nf
-@@ -9,6 +9,8 @@
+@@ -9,6 +9,7 @@
  
      input:
      tuple val(meta), path(reads)
-+    val umi_bc_pattern
 +    path whitelist
  
      output:
      tuple val(meta), path("*.fastq.gz"), emit: reads
-@@ -25,8 +27,10 @@
-         """
-         umi_tools \\
-             extract \\
-+            --bc-pattern=$umi_bc_pattern \\
-             -I $reads \\
-             -S ${prefix}.umi_extract.fastq.gz \\
-+            --whitelist=$whitelist \\
-             $args \\
-             > ${prefix}.umi_extract.log
- 
-@@ -39,10 +43,12 @@
-         """
-         umi_tools \\
-             extract \\
-+            --bc-pattern=$umi_bc_pattern \\
-             -I ${reads[0]} \\
-             --read2-in=${reads[1]} \\
-             -S ${prefix}.umi_extract_1.fastq.gz \\
-             --read2-out=${prefix}.umi_extract_2.fastq.gz \\
-+            --whitelist=$whitelist \\
-             $args \\
-             > ${prefix}.umi_extract.log
- 
+@@ -21,35 +22,20 @@
+     script:
+     def args = task.ext.args ?: ''
+     def prefix = task.ext.prefix ?: "${meta.id}"
+-    if (meta.single_end) {
+-        """
+-        umi_tools \\
+-            extract \\
+-            -I $reads \\
+-            -S ${prefix}.umi_extract.fastq.gz \\
+-            $args \\
+-            > ${prefix}.umi_extract.log
+-
+-        cat <<-END_VERSIONS > versions.yml
+-        "${task.process}":
+-            umitools: \$(umi_tools --version 2>&1 | sed 's/^.*UMI-tools version://; s/ *\$//')
+-        END_VERSIONS
+-        """
+-    }  else {
+-        """
+-        umi_tools \\
+-            extract \\
+-            -I ${reads[0]} \\
+-            --read2-in=${reads[1]} \\
+-            -S ${prefix}.umi_extract_1.fastq.gz \\
+-            --read2-out=${prefix}.umi_extract_2.fastq.gz \\
+-            $args \\
+-            > ${prefix}.umi_extract.log
+-
+-        cat <<-END_VERSIONS > versions.yml
+-        "${task.process}":
+-            umitools: \$(umi_tools --version 2>&1 | sed 's/^.*UMI-tools version://; s/ *\$//')
+-        END_VERSIONS
+-        """
+-    }
++    """
++    umi_tools \\
++        extract \\
++        --bc-pattern=CCCCCCCCCCCCCCCCNNNNNNNNNNNN \\
++        -I ${reads[0]} \\
++        --read2-in=${reads[1]} \\
++        -S ${prefix}.umi_extract_1.fastq.gz \\
++        --read2-out=${prefix}.umi_extract_2.fastq.gz \\
++        --whitelist=$whitelist \\
++        $args \\
++        > ${prefix}.umi_extract.log
++    cat <<-END_VERSIONS > versions.yml
++    "${task.process}":
++        umitools: \$(umi_tools --version 2>&1 | sed 's/^.*UMI-tools version://; s/ *\$//')
++    END_VERSIONS
++    """
+ }
 
 ************************************************************

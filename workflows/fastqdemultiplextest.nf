@@ -17,9 +17,7 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 
-// other params
-whitelist = params.whitelist
-umi_bc_pattern = params.umi_bc_pattern
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,10 +104,19 @@ workflow FASTQDEMULTIPLEXTEST {
     .set { ch_cat_fastq }
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
 
+    // ch_cat_fastq.view()
+    
+
     //
     // MODULE: Extract fastq by cell barcode list of individual
     //
-    
+    ch_cat_fastq_reads = CAT_FASTQ.out.reads
+    UMITOOLS_EXTRACT (
+        ch_cat_fastq_reads,
+        params.whitelist
+    )
+    umi_log     = UMITOOLS_EXTRACT.out.log
+    ch_versions = ch_versions.mix(UMITOOLS_EXTRACT.out.versions.first())
 
 }
 

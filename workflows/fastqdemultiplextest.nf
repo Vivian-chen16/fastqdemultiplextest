@@ -11,7 +11,7 @@ WorkflowFastqdemultiplextest.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.whitelist, params.umi_bc_pattern ]
+def checkPathParamList = [ params.input, params.whitelist]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters

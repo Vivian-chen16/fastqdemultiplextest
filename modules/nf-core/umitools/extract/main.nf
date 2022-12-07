@@ -1,6 +1,6 @@
 process UMITOOLS_EXTRACT {
     tag "$meta.id"
-    label "process_high"
+    label "process_long"
 
     conda (params.enable_conda ? "bioconda::umi_tools=1.1.2" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
